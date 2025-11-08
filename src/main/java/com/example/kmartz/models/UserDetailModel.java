@@ -22,6 +22,11 @@ public class UserDetailModel implements UserDetails {
         this.password = user.getPassword();
         this.authorities = Stream.of("ROLE_CUSTOMER").map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
+    public UserDetailModel(ShopKeeper user){
+        this.username = user.getEmail();
+        this.password = user.getPassword();
+        this.authorities = Stream.of("ROLE_SHOPKEEPER").map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { return this.authorities; }

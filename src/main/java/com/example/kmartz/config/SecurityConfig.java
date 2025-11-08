@@ -58,7 +58,7 @@ public class SecurityConfig {
             // Authorization configuration
             .authorizeHttpRequests(auth -> auth
                 // ✅ Public endpoints
-                .requestMatchers("/", "/api/auth/customer/**","/api/customers/**", "/api/auth/**", "/auth/**","/api/auth/customer/signup","/api/auth/customer/login").permitAll()
+                .requestMatchers("/**", "/api/auth/customer/**","/api/customers/**", "/api/auth/**", "/auth/**","/api/auth/customer/signup","/api/auth/customer/login","/api/auth/shopkeeper/signup","/api/auth/shopkeeper/login").permitAll()
                 // Swagger UI and API docs
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                 // Health check endpoint

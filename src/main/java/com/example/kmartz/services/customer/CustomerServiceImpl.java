@@ -41,11 +41,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
-        System.out.println("Raw password: " + customerDTO);
+        // System.out.println("Raw password: " + customerDTO);
         Customer customer = convertToEntity(customerDTO);
-        System.out.println("Raw password: " + customer.getPassword());
+        // System.out.println("Raw password: " + customer.getPassword());
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-        System.out.println("-->f"+customer);
+        // System.out.println("-->f"+customer);
         Customer savedCustomer = customerRepository.save(customer);
         return convertToDTO(savedCustomer);
     }

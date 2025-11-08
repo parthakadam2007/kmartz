@@ -4,6 +4,8 @@ import com.example.kmartz.models.JwtRequest;
 import com.example.kmartz.models.JwtResponse;
 import com.example.kmartz.security.JWTHelper;
 import com.example.kmartz.dto.CustomerDTO;
+import com.example.kmartz.dto.ShopKeeperDTO;
+import com.example.kmartz.services.shopkeeper.ShopKeeperServiceImpl;
 import com.example.kmartz.services.customer.CustomerService;
 
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     
     private final CustomerService customerService;
+    private final ShopKeeperServiceImpl shopKeeperService;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -37,20 +40,47 @@ public class AuthController {
 
     private Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    public AuthController(CustomerService customerService) {
+    public AuthController(CustomerService customerService, ShopKeeperServiceImpl shopKeeperService) {
         this.customerService = customerService;
+        this.shopKeeperService = shopKeeperService;
     }
 
-    @PostMapping("/customer/signup")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
-        if(customerDTO.email() == null || customerDTO.email().isEmpty() || customerDTO.password() == null || customerDTO.password().isEmpty()){
+    // @PostMapping("/customer/signup")
+    // public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
+    //     if(customerDTO.email() == null || customerDTO.email().isEmpty() || customerDTO.password() == null || customerDTO.password().isEmpty()){
+    //         throw new RuntimeException("Email cannot be null or empty");
+    //     }
+    //     if(customerService.getCustomerByEmail(customerDTO.email()) != null){
+    //         throw  new RuntimeException("Customer with email "+customerDTO.email()+" already exists");
+    //     }
+    //     System.out.println("Creating customer: " + customerDTO);
+    //     return customerService.saveCustomer(customerDTO);
+    // }
+
+            @PostMapping("/customer/signup")
+    public ResponseEntity<JwtResponse> signup(@RequestBody JwtRequest request) {
+        if(request.getEmail() == null || request.getEmail().isEmpty() || request.getPassword() == null || request.getPassword().isEmpty()){
             throw new RuntimeException("Email cannot be null or empty");
         }
-        if(customerService.getCustomerByEmail(customerDTO.email()) != null){
-            throw  new RuntimeException("Customer with email "+customerDTO.email()+" already exists");
-        }
-        System.out.println("Creating customer: " + customerDTO);
-        return customerService.saveCustomer(customerDTO);
+        // if(customerService.getCustomerByEmail(request.getEmail()) != null){
+        //     throw  new RuntimeException("Customer with email "+request.getEmail()+" already exists");
+        // }
+        System.out.println("Creating customer: c" + request.getEmail());
+
+        CustomerDTO customerDTO =new CustomerDTO(null,null,null,request.getEmail(),request.getPassword(),null,null);
+        customerService.saveCustomer(customerDTO);
+        // CustomerDTO createdCustomer = customerService.saveCustomer(customer.toDTO());
+
+        this.doAuthenticate(request.getEmail(), request.getPassword());
+
+        Long customerId = customerService.getCustomerByEmail(request.getEmail()).customerId();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        String token = this.helper.generateToken(userDetails,customerId);
+
+        JwtResponse response = JwtResponse.builder()
+                .jwtToken(token)
+                .username(userDetails.getUsername()).build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/customer/login") 
@@ -68,6 +98,57 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
+    ///shoperkeeper signup///////////////////////////
+    
+
+
+    @PostMapping("/shopkeeper/signup")
+    public ResponseEntity<JwtResponse> shopkeeperSignup(@RequestBody JwtRequest request) {
+        if(request.getEmail() == null || request.getEmail().isEmpty() || request.getPassword() == null || request.getPassword().isEmpty()){
+            throw new RuntimeException("Email cannot be null or empty");
+        }
+        // if(customerService.getCustomerByEmail(request.getEmail()) != null){
+        //     throw  new RuntimeException("Customer with email "+request.getEmail()+" already exists");
+        // }
+        System.out.println("Creating shopkeeper: " + request.getEmail() +request.getPassword());
+
+        ShopKeeperDTO shopKeeperDTO = new ShopKeeperDTO(null, null, null, request.getEmail(), request.getPassword(), null, null);
+        shopKeeperService.saveShopKeeper(shopKeeperDTO);
+        // ShopKeeperDTO createdShopKeeper = shopKeeperService.saveShopKeeper(shopKeeperDTO);
+        System.out.println("Created shopkeeper: " + shopKeeperDTO);
+        this.doAuthenticate(request.getEmail(), request.getPassword());
+
+        Long shopKeeperId = shopKeeperService.getShopKeeperByEmail(request.getEmail()).shopKeeperId();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        String token = this.helper.generateToken(userDetails, shopKeeperId);
+
+        JwtResponse response = JwtResponse.builder()
+                .jwtToken(token)
+                .username(userDetails.getUsername()).build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+        @PostMapping("/shopkeeper/login") 
+    public ResponseEntity<JwtResponse> shopkeeperLogin(@RequestBody JwtRequest request) {
+
+        this.doAuthenticate(request.getEmail(), request.getPassword());
+
+        Long shopKeeperId = shopKeeperService.getShopKeeperByEmail(request.getEmail()).shopKeeperId();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        String token = this.helper.generateToken(userDetails, shopKeeperId);
+
+        JwtResponse response = JwtResponse.builder()
+                .jwtToken(token)
+                .username(userDetails.getUsername()).build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+
+    ////Helpers///
+
     private void doAuthenticate(String email, String password) {
     UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(email, password);
@@ -77,6 +158,7 @@ public class AuthController {
         throw new BadCredentialsException(" Invalid email or Password  !!");
     }
     }
+    
      
 
     @ExceptionHandler(BadCredentialsException.class)

@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Entity
 @Table(
-    name = "customers",
+    name = "shopkeepers",
     uniqueConstraints = {
         @UniqueConstraint(columnNames = {"email"}),
         @UniqueConstraint(columnNames = {"phone_no"})
@@ -18,30 +18,27 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class ShopKeeper {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customerId", nullable = false)
-    private Long customerId;
+    private Long shopKeeperId;
 
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "firstName", nullable = true)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "lastName", nullable = true)
     private String lastName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true )
     private String email;
 
     @Column(name="password", nullable = false)
     private String password;
-    
-    @Column(name = "phone_no", nullable = false, unique = true, length = 15)
+
+    @Column(name = "phoneNo", nullable = true, unique = true, length = 15)
     private String phoneNo;
 
-    @Column(nullable = false)
+    @Column(name = "address", nullable = true)
     private String address;
-
-
 }

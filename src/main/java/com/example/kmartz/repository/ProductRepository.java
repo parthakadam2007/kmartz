@@ -3,7 +3,10 @@ package com.example.kmartz.repository;
 import com.example.kmartz.models.Product;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -36,4 +39,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 7️⃣ Get all products sorted by price (descending)
     @Query(value = "SELECT * FROM products ORDER BY price DESC", nativeQuery = true)
     List<Product> findAllSortedByPriceDesc();
+    // create order
+    @Query(value = "SELECT * FROM products WHERE order_id = :orderId", nativeQuery = true)
+    List<Product> createOrder(@Param("orderId") Long orderId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO orders (product_id, customer_id, status) VALUES (:productId, :customerId, :status)", nativeQuery = true)
+    void createOrder(@Param("productId") Long productId,
+                     @Param("customerId") Long customerId,
+                     @Param("status") String status);
 }

@@ -18,9 +18,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shopkeeperId", nullable = false)
-    private ShopKeeper shopkeeper;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "shopkeeperId", nullable = false)
+    private Long shopkeeperId;
 
     @Column(name = "imageUrl")
     private String imageUrl;

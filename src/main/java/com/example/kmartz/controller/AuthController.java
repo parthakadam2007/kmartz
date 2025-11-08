@@ -53,64 +53,31 @@ public class AuthController {
         return customerService.saveCustomer(customerDTO);
     }
 
-    //     @PostMapping("/customer/signup")
-    // public ResponseEntity<JwtResponse> signup(@RequestBody JwtRequest request) {
-    //     if(request.getEmail() == null || request.getEmail().isEmpty() || request.getPassword() == null || request.getPassword().isEmpty()){
-    //         throw new RuntimeException("Email cannot be null or empty");
-    //     }
-    //     // if(customerService.getCustomerByEmail(request.getEmail()) != null){
-    //     //     throw  new RuntimeException("Customer with email "+request.getEmail()+" already exists");
-    //     // }
-    //     System.out.println("Creating customer: c" + request.getEmail());
-
-    //     CustomerDTO customerDTO =new CustomerDTO(null,null,null,request.getEmail(),request.getPassword(),null,null);
-    //     customerService.saveCustomer(customerDTO);
-    //     // CustomerDTO createdCustomer = customerService.saveCustomer(customer.toDTO());
-
-    //     this.doAuthenticate(request.getEmail(), request.getPassword());
-
-    //     Long customerId = customerService.getCustomerByEmail(request.getEmail()).customerId();
-    //     UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-    //     String token = this.helper.generateToken(userDetails,customerId);
-
-    //     JwtResponse response = JwtResponse.builder()
-    //             .jwtToken(token)
-    //             .username(userDetails.getUsername()).build();
-    //     return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
-
-
-    
     @PostMapping("/customer/login") 
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
-        
+
         this.doAuthenticate(request.getEmail(), request.getPassword());
-        
+
         Long customerId = customerService.getCustomerByEmail(request.getEmail()).customerId();
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = this.helper.generateToken(userDetails,customerId);
-        
+
         JwtResponse response = JwtResponse.builder()
-        .jwtToken(token)
-        .username(userDetails.getUsername()).build();
+                .jwtToken(token)
+                .username(userDetails.getUsername()).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //Shopkeer//
-
-
-
-    ///////////////////// helper method ///////////////////////
-    
     private void doAuthenticate(String email, String password) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
-        try {
-            manager.authenticate(authentication);
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid Username or Password!!");
-        }
+    UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(email, password);
+    try {
+        manager.authenticate(authentication);
+    } catch (BadCredentialsException e) {
+        throw new BadCredentialsException(" Invalid email or Password  !!");
     }
+    }
+     
 
     @ExceptionHandler(BadCredentialsException.class)
     public String exceptionHandler() {

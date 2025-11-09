@@ -49,4 +49,32 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     void createOrder(@Param("productId") Long productId,
                      @Param("customerId") Long customerId,
                      @Param("status") String status);
+
+    // Get all orders for a specific shopkeeper
+   @Query(value = "SELECT P.* FROM orders AS O INNER JOIN products AS P ON P.product_id = O.product_id WHERE P.shopkeeper_id = :shopkeeperId", nativeQuery = true)
+   List<Product> findOrdersByShopkeeperId(@Param("shopkeeperId") Long shopkeeperId);
+
+@Query(value = """
+    SELECT 
+        O.order_id AS orderId,
+        O.status AS status,
+        P.product_id AS productId,
+        P.name AS productName,
+        P.price AS price,
+        P.image_url AS imageUrl,
+        P.description AS description,
+        P.rating AS rating,
+        C.customer_id AS customerId,
+        C.email AS customerEmail
+    FROM orders AS O
+    INNER JOIN products AS P 
+        ON P.product_id = O.product_id
+    INNER JOIN customers AS C 
+        ON O.customer_id = C.customer_id
+    WHERE P.shopkeeper_id = :shopkeeperId
+""", nativeQuery = true)
+List<Object[]> findOrderProductData(@Param("shopkeeperId") Long shopkeeperId);
+
+
+
 }

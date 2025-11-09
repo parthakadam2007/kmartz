@@ -1,10 +1,13 @@
 package com.example.kmartz.services.product;
 
 import com.example.kmartz.dto.ProductDTO;
+import com.example.kmartz.dto.OrderProductDTO;
 import com.example.kmartz.models.Product;
 import com.example.kmartz.models.ShopKeeper;
 import com.example.kmartz.repository.ProductRepository;
 import com.example.kmartz.repository.ShopKeeperRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +68,22 @@ public class ProductServiceImpl implements ProductService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    // public List<OrderProductDTO> getOrdersWithProducts(Long shopkeeperId) {
+    //     return productRepository.findOrdersByShopkeeperId(shopkeeperId)
+    //             .stream()
+    //             .map(row -> new OrderProductDTO(
+    //                     ((Number) row[0]).longValue(),  // orderId
+    //                     ((Number) row[1]).intValue(),   // quantity
+    //                     (String) row[2],                // status
+    //                     (String) row[3],                // productName
+    //                     ((Number) row[4]).doubleValue(),// price
+    //                     (String) row[5],                // imageUrl
+    //                     (String) row[6],                // description
+    //                     ((Number) row[7]).intValue()    // rating
+    //             ))
+    //             .collect(Collectors.toList());
+    // }
 
     // 🔁 Helper: Entity → DTO
     private ProductDTO convertToDTO(Product product) {

@@ -79,7 +79,8 @@ public class AuthController {
 
         JwtResponse response = JwtResponse.builder()
                 .jwtToken(token)
-                .username(userDetails.getUsername()).build();
+                .username(userDetails.getUsername())
+                .customerId(customerId).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -89,12 +90,17 @@ public class AuthController {
         this.doAuthenticate(request.getEmail(), request.getPassword());
 
         Long customerId = customerService.getCustomerByEmail(request.getEmail()).customerId();
+        if(customerId == null){
+            throw new RuntimeException("Customer not found with email: " + request.getEmail());
+            
+        }
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = this.helper.generateToken(userDetails,customerId);
 
         JwtResponse response = JwtResponse.builder()
                 .jwtToken(token)
-                .username(userDetails.getUsername()).build();
+                .username(userDetails.getUsername())
+                .customerId(customerId).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -125,7 +131,8 @@ public class AuthController {
 
         JwtResponse response = JwtResponse.builder()
                 .jwtToken(token)
-                .username(userDetails.getUsername()).build();
+                .username(userDetails.getUsername())
+                .shopKeeperId(shopKeeperId).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -141,7 +148,8 @@ public class AuthController {
 
         JwtResponse response = JwtResponse.builder()
                 .jwtToken(token)
-                .username(userDetails.getUsername()).build();
+                .username(userDetails.getUsername())
+                .shopKeeperId(shopKeeperId).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

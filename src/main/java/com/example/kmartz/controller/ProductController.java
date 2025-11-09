@@ -1,8 +1,9 @@
 package com.example.kmartz.controller;
 
 import com.example.kmartz.repository.ProductRepository;
-
+import com.example.kmartz.dto.OrderProductDTO;
 import com.example.kmartz.dto.ProductDTO;
+import com.example.kmartz.models.Product;
 import com.example.kmartz.services.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,12 @@ public class ProductController {
     private ProductRepository productRepository;
 
     // Create new product
-    @PostMapping("/create")
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+    @PostMapping("/create/{shopkeeperId}")
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO, @PathVariable Long shopkeeperId) {
+        System.out.println("Creating product for shopkeeper ID: " + shopkeeperId);
+        productDTO.setShopkeeperId(shopkeeperId);
         ProductDTO createdProduct = productService.createProduct(productDTO);
+        System.out.println("Created product: " + createdProduct);
         return ResponseEntity.ok(createdProduct);
     }
     @PostMapping("/create/{productId}/{customerId}")
@@ -53,15 +57,22 @@ public class ProductController {
     }
 
     // Get all products for a shopkeeper
-    @GetMapping("/shopkeeper/{shopkeeperId}")
-    public ResponseEntity<List<ProductDTO>> getProductsByShopkeeperId(@PathVariable Long shopkeeperId) {
-        List<ProductDTO> products = productService.getProductsByShopkeeperId(shopkeeperId);
-        return ResponseEntity.ok(products);
+//     @GetMapping("/orders/shopkeeper/{shopkeeperId}")
+//     public ResponseEntity<List<Product>> getProductsByShopkeeperId(@PathVariable Long shopkeeperId) {
+
+// List<Product> products = productRepository.findOrdersByShopkeeperId(shopkeeperId);
+//         return ResponseEntity.ok(products);
+//     }
+    // get all orders for a shopkeeper
+    @GetMapping("/shopkeeper/{shopkeeperId}/orders")
+    public ResponseEntity<List<Object[]>> getShopkeeperOrders(@PathVariable Long shopkeeperId) {
+        List<Object[]> orders = productRepository.findOrderProductData(shopkeeperId);
+        return ResponseEntity.ok(orders);
     }
 
-
-    @GetMapping("/orders/{shopkeeperId}/items")
-    public ResponseEntity<List<ProductDTO>> getProductsByOrderId(@PathVariable Long shopkeeperId) {
+    // get all products for a shopkeeper
+    @GetMapping("/shopkeeper/{shopkeeperId}")
+    public ResponseEntity<List<ProductDTO>> getProductsByShopkeeperIdController(@PathVariable Long shopkeeperId) {
         List<ProductDTO> products = productService.getProductsByShopkeeperId(shopkeeperId);
         return ResponseEntity.ok(products);
     }

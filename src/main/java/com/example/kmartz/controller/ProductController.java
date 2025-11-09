@@ -30,7 +30,7 @@ public class ProductController {
         System.out.println("Created product: " + createdProduct);
         return ResponseEntity.ok(createdProduct);
     }
-    @PostMapping("/create/{productId}/{customerId}")
+    @PostMapping("/order/create/{productId}/{customerId}")
     public ResponseEntity<String> createOrder(
             @PathVariable Long productId,
             @PathVariable Long customerId,

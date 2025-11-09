@@ -20,7 +20,7 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    // ✅ Create new product
+    // Create new product
     @PostMapping("/create")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
         ProductDTO createdProduct = productService.createProduct(productDTO);
@@ -38,21 +38,21 @@ public class ProductController {
 
 
 
-    // ✅ Get product by ID
+    //  Get product by ID
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productId) {
         ProductDTO product = productService.getProductById(productId);
         return ResponseEntity.ok(product);
     }
 
-    // ✅ Get all products
+    //  Get all products
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<ProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
-    // ✅ Get all products for a shopkeeper
+    // Get all products for a shopkeeper
     @GetMapping("/shopkeeper/{shopkeeperId}")
     public ResponseEntity<List<ProductDTO>> getProductsByShopkeeperId(@PathVariable Long shopkeeperId) {
         List<ProductDTO> products = productService.getProductsByShopkeeperId(shopkeeperId);
